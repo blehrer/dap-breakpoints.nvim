@@ -1,9 +1,16 @@
 local MenuItem = {}
 MenuItem.__index = MenuItem
+MenuItem.__tostring = function(self)
+  return self.key and self.bp and ("%s: %s"):format(self.key, self:get()) or nil
+end
 
 ---@class MenuItem
 ---@field key string
 ---@field bp DapBp.Breakpoint
+---@field menu_key fun(MenuItem): string
+---@field new fun(table): MenuItem
+---@field get fun (MenuItem): string
+---@field set fun(MenuItem, string): nil
 
 ---@param o any
 ---@return MenuItem
@@ -15,7 +22,7 @@ function MenuItem.new(o)
   return self
 end
 
----@type string?
+---@type DapBp.Breakpoint?
 MenuItem.bp = nil
 
 ---@type string?
@@ -23,6 +30,7 @@ MenuItem.key = nil
 
 ---@param self MenuItem
 ---@return string
+---@type function(MenuItem): string
 function MenuItem.menu_key(self)
   -- from http://lua-users.org/wiki/StringRecipes#:~:text=Change%20an%20entire,w_%27%5D*)%22%2C%20tchelper)
   ---@param first string
@@ -45,7 +53,7 @@ function MenuItem.get(self)
   return self.bp[self.key]
 end
 
----@type function
+---@type function(MenuItem, string)
 ---@param self MenuItem
 ---@param value string
 function MenuItem.set(self, value)

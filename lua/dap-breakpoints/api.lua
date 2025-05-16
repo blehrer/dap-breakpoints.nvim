@@ -116,11 +116,6 @@ function M.edit_properties()
 
   vim.ui.select(attrs, {
     prompt = "Edit Breakpoint",
-    format_item = function(item)
-      local k = item and item:menu_key()
-      local v = item and item:get()
-      return ("%s: %s"):format(k, v)
-    end,
   }, function(choice)
     if choice then
       local prompt = choice:menu_key()
