@@ -94,7 +94,7 @@ function M.popup_reveal()
   else
     util.show_popup({
       title = "Log point message:",
-      message = "\"" .. _breakpoint["logMessage"] .. "\"",
+      message = '"' .. _breakpoint["logMessage"] .. '"',
       syntax = "lua",
     })
   end
@@ -263,7 +263,7 @@ function M.clear_all_breakpoints()
   end
 
   vim.ui.input({ prompt = "Clear all (" .. total_count .. ") breakpoints" .. and_save .. "? [y/N] " }, function(input)
-    if input and string.match(string.lower(input), '^ye?s?$') then
+    if input and string.match(string.lower(input), "^ye?s?$") then
       if virtual_text.enabled then
         virtual_text.clear_all_virtual_text()
       end
