@@ -100,6 +100,56 @@ function M.popup_reveal()
   end
 end
 
+function M.edit_properties()
+  ---@type DapBp.Breakpoint
+  local bp = breakpoint.get_breakpoint() or { line = vim.fn.line(".") }
+  local filetype = vim.bo.filetype
+
+  local MenuItem = require("dap-breakpoints.menu-item")
+  ---@type MenuItem[]
+  local attrs = {
+    MenuItem.new({ bp = bp, key = "condition" }),
+    MenuItem.new({ bp = bp, key = "hitCondition" }),
+    MenuItem.new({ bp = bp, key = "logMessage" }),
+    MenuItem.new({ bp = bp, key = "line" }),
+  }
+
+  vim.ui.select(attrs, {
+    prompt = "Edit Breakpoint",
+    format_item = function(item)
+      local k = item and item:menu_key()
+      local v = item and item:get()
+      return ("%s: %s"):format(k, v)
+    end,
+  }, function(choice)
+    if choice then
+      local prompt = choice:menu_key()
+      if choice then
+        local update = vim.fn.input({
+          prompt = prompt,
+          default = choice and choice:get() or "",
+        })
+        choice:set(update)
+
+        if choice.bp.line ~= vim.fn.line(".") then
+          -- toggle bp on current line
+          breakpoint.toggle_breakpoint()
+          -- move to correct line
+          vim.api.nvim_win_set_cursor(0, { tonumber(choice.bp.line), 0 })
+          vim.cmd("norm _")
+        end
+
+        -- Set breakpoint for current line, with customizations
+        breakpoint.set_breakpoint({
+          condition = choice.bp.condition,
+          log_message = choice.bp.logMessage,
+          hit_condition = choice.bp.hitCondition,
+        })
+      end
+    end
+  end)
+end
+
 function M.edit_property()
   local _breakpoint = breakpoint.get_breakpoint()
   if _breakpoint == nil then
